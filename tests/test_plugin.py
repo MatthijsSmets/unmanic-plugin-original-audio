@@ -72,8 +72,21 @@ def test_language_normalization_codes_names_and_variants():
     assert plugin.normalize_language("nld") == "nld"
     assert plugin.normalize_language("dut") == "nld"
     assert plugin.normalize_language("Dutch") == "nld"
+    assert plugin.normalize_language("ru") == "rus"
+    assert plugin.normalize_language("rus") == "rus"
+    assert plugin.normalize_language("Russian") == "rus"
+    assert plugin.normalize_language("uk") == "ukr"
+    assert plugin.normalize_language("ukr") == "ukr"
+    assert plugin.normalize_language("Ukrainian") == "ukr"
     assert plugin.normalize_language("und") is None
     assert plugin.normalize_language(None) is None
+
+
+def test_language_normalization_uses_iso_database_for_broad_coverage():
+    assert plugin.normalize_language("sv") == "swe"
+    assert plugin.normalize_language("Swedish") == "swe"
+    assert plugin.normalize_language("ar") == "ara"
+    assert plugin.normalize_language("Arabic") == "ara"
 
 
 def test_radarr_response_parsing_and_movie_matching():

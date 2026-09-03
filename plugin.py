@@ -16,6 +16,11 @@ import urllib.parse
 import urllib.request
 
 try:
+    import pycountry
+except Exception:  # pragma: no cover - dependency is declared for Unmanic/runtime
+    pycountry = None
+
+try:
     from unmanic.libs.unplugins.settings import PluginSettings
 except Exception:  # pragma: no cover - used by unit tests outside Unmanic
     class PluginSettings:
@@ -112,7 +117,7 @@ class Settings(PluginSettings):
     }
 
 
-LANGUAGE_ALIASES = {
+FALLBACK_LANGUAGE_ALIASES = {
     "en": "eng",
     "eng": "eng",
     "english": "eng",
@@ -179,7 +184,19 @@ def normalize_language(value):
     if not text or text in {"und", "undefined", "unknown", "none", "null"}:
         return None
     text = text.split("-")[0]
-    return LANGUAGE_ALIASES.get(text, text if len(text) == 3 else None)
+    if pycountry:
+        for attr in ("alpha_2", "alpha_3", "bibliographic"):
+            try:
+                language = pycountry.languages.get(**{attr: text})
+            except (KeyError, TypeError):
+                language = None
+            if language:
+                return language.alpha_3
+        for language in pycountry.languages:
+            for attr in ("name", "common_name", "inverted_name"):
+                if str(getattr(language, attr, "")).casefold() == text:
+                    return language.alpha_3
+    return FALLBACK_LANGUAGE_ALIASES.get(text)
 
 
 def _language_from_record(record):

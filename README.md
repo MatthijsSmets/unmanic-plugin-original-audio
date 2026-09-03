@@ -8,7 +8,7 @@ This plugin only selects and removes audio streams. It never transcodes audio, d
 
 Copy this plugin directory into your Unmanic plugins directory and enable **Keep Original Language Audio** in Unmanic.
 
-The plugin requires `ffprobe` and `ffmpeg` to be available to Unmanic. It has no additional Python runtime dependencies.
+The plugin requires `ffprobe` and `ffmpeg` to be available to Unmanic. Python dependencies are listed in `requirements.txt`.
 
 ## Configuration
 
@@ -124,13 +124,15 @@ To minimize false positives, `comment`/`comments` is treated as commentary only 
 
 ## Language normalization
 
-Language comparison is normalized before matching. The plugin supports ISO 639-1 codes, ISO 639-2 bibliographic/terminology variants, common language names, and case-insensitive values.
+Language comparison is normalized before matching. The plugin uses `pycountry` for broad ISO language coverage, including ISO 639-1 codes, ISO 639-2 bibliographic/terminology variants, common language names, and case-insensitive values.
 
 Common variants include:
 
 - `eng`, `en`, `English` => English
 - `fra`, `fre`, `fr`, `French` => French
 - `nld`, `dut`, `nl`, `Dutch` => Dutch
+- `rus`, `ru`, `Russian` => Russian
+- `ukr`, `uk`, `Ukrainian` => Ukrainian
 
 Missing or `und` stream language tags are treated as unsafe and do not match. If no stream safely matches the detected original language, the plugin leaves the file unchanged.
 
